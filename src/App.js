@@ -15,21 +15,31 @@ function post (url, json) {
 }
 
 const Test = () => {
-  const [text, setText] = useState('iii')
+  const [text, setText] = useState('')
   const onClick = () => {
     const number = Math.random()
     setText('changed yo' + number)
   }
   const fireIt = () => {
-    return post('/test/post', {val: 'client'})
+    return post('/test/post', {value: text})
       .then(data => {
         console.log('check my data out', data)
       })
   }
+  const [info, setInfo] = useState('')
+  const getBack = () => {
+    fetch('/test/read')
+      .then(res => res.text())
+      .then(data => {
+        setInfo(data)
+      })
+  }
+  const onChange = e => setText(e.target.value)
   return (
     <div>
-      <div onClick={onClick} >lalllla {text} </div>
-      <div onClick={fireIt}>ooook</div>
+      <input value={text} onChange={onChange} />
+      <div onClick={fireIt}>send</div>
+      <div onClick={getBack}> get back: {JSON.stringify(info)}</div>
     </div>
   )
 }

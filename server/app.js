@@ -9,10 +9,19 @@ app.use(bodyParser.json());
 app.get('/', function (req, res) {
   res.send('changed!');
 });
-app.post('/test/post', (req, res) => {
-  console.log('what is sent', req.body)
+app.get('/test/read', (req, res) => {
   const fs = require('fs');
-  fs.writeFile("/tmp/test", JSON.stringify(req.body), function(err) {
+  fs.readFile('/tmp/test',{encoding: 'utf-8'}, (err, data) => {
+    if (err) {
+      throw err
+    }
+    console.log('the data we got', data)
+    res.end(data)
+  })
+})
+app.post('/test/post', (req, res) => {
+  const fs = require('fs');
+  fs.writeFile("/tmp/test", req.body.value, function(err) {
       if(err) {
           return console.log(err);
       }
