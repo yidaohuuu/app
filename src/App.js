@@ -8,8 +8,20 @@ const Test = () => {
     const number = Math.random()
     setText('changed yo' + number)
   }
+  const fireIt = () => {
+    fetch('/test/save')
+      .then(res => {
+        return res.json()
+      })
+      .then(data => {
+        console.log('the data', data)
+      })
+  }
   return (
-    <div onClick={onClick} >lalllla {text} </div>
+    <div>
+      <div onClick={onClick} >lalllla {text} </div>
+      <div onClick={fireIt}>ooook</div>
+    </div>
   )
 }
 
