@@ -19,6 +19,30 @@ app.get('/test/read', (req, res) => {
     res.end(data)
   })
 })
+
+app.get('/graph', (req, res) => {
+  const fs = require('fs');
+  fs.readFile('/tmp/graph',{encoding: 'utf-8'}, (err, data) => {
+    if (err) {
+      throw err
+    }
+    res.end(data)
+  })
+})
+
+app.post('/graph', (req, res) => {
+  const fs = require('fs');
+  const graph = req.body.graph
+  const graphStr = JSON.stringify(graph)
+  fs.writeFile("/tmp/graph", graphStr, function(err) {
+      if(err) {
+          return console.log(err);
+      }
+      console.log("The file was saved!");
+  });
+  res.json({graph})
+})
+
 app.post('/test/post', (req, res) => {
   const fs = require('fs');
   fs.writeFile("/tmp/test", req.body.value, function(err) {
