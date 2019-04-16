@@ -58,6 +58,22 @@ const Save = ({onClick}) => {
 
 const Load = ({onClick}) => <DoButton onClick={onClick} text="Reload" />
 
+const isRequired = () => {
+    throw new Error('A required parameter is missing')
+}
+
+function getTopicFuncs () {
+    return {
+        createTopic ({name = isRequired, description = '', }) {
+            return {
+                name,
+                description,
+                labels: [],
+            }
+        }
+    }
+}
+
 const Workspace = () => {
     const [topics, setTopics] = useState([])
     const [labels, setLabels] = useState([])

@@ -22,7 +22,7 @@ app.get('/test/read', (req, res) => {
 
 app.get('/graph', (req, res) => {
   const fs = require('fs');
-  fs.readFile('/tmp/graph',{encoding: 'utf-8'}, (err, data) => {
+  fs.readFile('./data/graph',{encoding: 'utf-8'}, (err, data) => {
     if (err) {
       throw err
     }
@@ -34,7 +34,7 @@ app.post('/graph', (req, res) => {
   const fs = require('fs');
   const graph = req.body.graph
   const graphStr = JSON.stringify(graph)
-  fs.writeFile("/tmp/graph", graphStr, function(err) {
+  fs.writeFile("./data/graph", graphStr, function(err) {
       if(err) {
           return console.log(err);
       }
