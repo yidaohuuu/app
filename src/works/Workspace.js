@@ -1,43 +1,11 @@
 import React, { Component, useState, Fragment} from 'react';
 import TopicItem from './TopicItem'
+import resource from 'resource'
+import TopicPage from './TopicPage'
 
 
-function getResource () {
-    function post (url, json) {
-      return fetch(url, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(json)
-      })
-        .then(res => res.json())
-    }
-    const saveGraph = (graph) => {
-        return post('/graph', {graph})
-    }
-
-    const getGraph = () => {
-        return fetch('/graph')
-            .then(res => res.json())
-    }
 
 
-    const getBack = () => {
-      fetch('/test/read')
-        .then(res => res.text())
-        .then(data => {
-        })
-    }
-    return {
-        saveGraph,
-        getGraph
-    }
-}
-
-
-const resource = getResource()
 
 const Area = (props) => (
     <div style={{border: '1px solid black', margin: '20px', padding: '10px'}}> 
@@ -84,12 +52,19 @@ const labelFuncs = {
     }
 }
 
+
+
 const Workspace = () => {
+    const views = {
+        main: 'main',
+        topicPage: 'topicPage'
+    }
     const [topics, setTopics] = useState([])
     const [labels, setLabels] = useState([])
     const [topicName, setTopicName] = useState('')
     const [labelName, setLabelName] = useState('')
     const [topicDescription, setTopicDescription] = useState('')
+    const [view, setView] = useState(views.main)
     const addTopic = () => {
         const topic = topicFuncs.createTopic({name: topicName})
         setTopics([...topics, topic])
@@ -117,8 +92,8 @@ const Workspace = () => {
             })
     }
 
-    return (
-        <Fragment> 
+    const mainPage = (
+        <Fragment>
             <Area> 
                 Current topics: 
                 {topics.map(topic => <TopicItem key={topic.name} topic={topic} onClick={e => alert(topic.name)} />)}
@@ -140,7 +115,23 @@ const Workspace = () => {
             </Area>
             <Save onClick={onSave}/>
             <Load onClick={onLoad} />
+        </Fragment>
+    )
 
+    return (
+        <Fragment> 
+            {view}
+            {
+                (() => {
+                    switch (view) {
+                        case 'main': return mainPage
+                        case 'topicPage': return <TopicPage />
+                        default: return mainPage
+                    }
+                })()
+            }
+            <DoButton text="to topic page" onClick={() => setView(views.topicPage)} />
+            <DoButton text="to main page" onClick={() => setView(views.main)} />
         </Fragment>
     )
 }
