@@ -1,4 +1,5 @@
 import React, { Component, useState, Fragment} from 'react';
+import TopicItem from './TopicItem'
 
 
 function getResource () {
@@ -62,14 +63,23 @@ const isRequired = () => {
     throw new Error('A required parameter is missing')
 }
 
-function getTopicFuncs () {
-    return {
-        createTopic ({name = isRequired, description = '', }) {
-            return {
-                name,
-                description,
-                labels: [],
-            }
+const topicFuncs = {
+    createTopic ({name = isRequired(), description = '', }) {
+        return {
+            name,
+            description,
+            labels: [],
+            similar: [],
+            comments: [],
+        }
+    }
+}
+
+const labelFuncs = {
+    createLabel ({name = isRequired()}) {
+        return {
+            name,
+            similar: []
         }
     }
 }
@@ -79,12 +89,15 @@ const Workspace = () => {
     const [labels, setLabels] = useState([])
     const [topicName, setTopicName] = useState('')
     const [labelName, setLabelName] = useState('')
+    const [topicDescription, setTopicDescription] = useState('')
     const addTopic = () => {
-        setTopics([...topics, {name: topicName}])
+        const topic = topicFuncs.createTopic({name: topicName})
+        setTopics([...topics, topic])
         setTopicName('')
     }
     const addLabel = () => {
-        setLabels([...labels, {name: labelName}])
+        const label = labelFuncs.createLabel({name: labelName})
+        setLabels([...labels, label])
         setLabelName('')
     }
 
@@ -107,13 +120,18 @@ const Workspace = () => {
     return (
         <Fragment> 
             <Area> 
-                Current topics: {topics.map(topic => topic.name).join(', ')} <br/>
-                Current labels: {labels.map(label => label.name).join(', ')}
+                Current topics: 
+                {topics.map(topic => <TopicItem key={topic.name} topic={topic} onClick={e => alert(topic.name)} />)}
+                <br/>
+                Current labels: 
+                {labels.map(label => label.name).join(', ')}
             </Area>
             <Area> 
                 Create a topic: <br/>
                 Name: <input value={topicName} onChange={e => setTopicName(e.target.value)} /> <br/>
+                Description: <input value={topicDescription} onChange={e => setTopicDescription(e.target.value)} /> <br/>
                 <button onClick={addTopic}>Create</button>
+
             </Area>
             <Area> 
                 Create a label: <br/>
