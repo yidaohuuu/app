@@ -23,10 +23,14 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const similarTopics = store.getSimilarTopics(topic)
     const myLabels = store.getLabels(topic)
 
+    const removeSimilarTopic = one => {
+        store.removeTopicLink(one, topic)
+    }
+
     const listProps = {
         list: similarTopics,
         getKey: t => t.name,
-        renderContent: t => t.name
+        renderContent: t => <span> {t.name} <button onClick={e => removeSimilarTopic(t)}>Remove</button> </span>
     }
     const similarTopicList = (
         <List {...listProps} />
