@@ -1,15 +1,11 @@
 import React, {useState, Fragment} from 'react';
 import TopicItem from './TopicItem'
-import resource from 'resource'
 import TopicPage from './TopicPage'
 import LabelItem from './LabelItem'
 import LabelPage from './LabelPage'
-
-const Area = (props) => (
-    <div style={{border: '1px solid black', margin: '20px', padding: '10px'}}> 
-        {props.children}
-    </div>
-)
+import Area from './Area'
+import StoreContext from './StoreContext'
+import useStore from './useStore'
 
 const DoButton = ({text, onClick}) => {
     return (
@@ -29,89 +25,6 @@ const isRequired = () => {
     throw new Error('A required parameter is missing')
 }
 
-const topicFuncs = {
-    createTopic ({name = isRequired(), description = '', }) {
-        return {
-            name,
-            description,
-            labels: [],
-            similar: [],
-            comments: [],
-        }
-    }
-}
-
-const labelFuncs = {
-    createLabel ({name = isRequired()}) {
-        return {
-            name,
-            similar: []
-        }
-    }
-}
-
-const useStore = () => {
-    // so far we have no order
-    const [topicDict, setTopicDict] = useState({})
-    const [labelDict, setLabelDict] = useState({})
-    const [currentTopicId, setCurrentTopicId] = useState(null)
-    const [currentLabelId, setCurrentLabelId] = useState(null)
-
-    const hasTopic = currentTopicId != null
-    const hasLabel = currentLabelId != null
-    const currentTopic = hasTopic ? topicDict[currentTopicId] : null
-    const currentLabel = hasLabel ? labelDict[currentLabelId] : null
-
-
-    // derived values
-    const topics = Object.values(topicDict)
-    const labels = Object.values(labelDict)
-
-    const addTopic = (attrs) => {
-        const topic = topicFuncs.createTopic(attrs)
-        setTopicDict({...topicDict, [topic.name]: topic})
-    }
-
-    const addLabel = (attrs) => {
-        const label = labelFuncs.createLabel(attrs)
-        setLabelDict({...labelDict, [label.name]: label})
-    }
-
-    const save = () => {
-        const graph = {
-            topicDict,
-            labelDict
-        }
-        return resource.saveGraph(graph)
-    }
-
-    const load = () => {
-        return resource.getGraph()
-            .then((graph) => {
-                setTopicDict(graph.topicDict)
-                setLabelDict(graph.labelDict)
-            })
-    }
-
-    return {
-        topics,
-        labels,
-        addTopic,
-        addLabel,
-        save,
-        load,
-        currentTopic,
-        currentLabel,
-        changeTopic (topic) {
-            setCurrentTopicId(topic.name)
-        },
-        changeLabel (label) {
-            setCurrentLabelId(label.name)
-        }
-    }
-}
-
-
 const Workspace = () => {
     const views = {
         main: 'main',
@@ -126,7 +39,7 @@ const Workspace = () => {
     const [view, setView] = useState(views.main)
 
     const addTopic = () => {
-        store.addTopic({name: topicName})
+        store.addTopic({name: topicName, description: topicDescription})
         setTopicName('')
     }
     const addLabel = () => {
@@ -184,10 +97,10 @@ const Workspace = () => {
     }
 
     return (
-        <Fragment> 
+        <StoreContext.Provider value={store}>
             {doSwitch()}
             <DoButton text="to main page" onClick={() => setView(views.main)} />
-        </Fragment>
+        </StoreContext.Provider>
     )
 }
 
