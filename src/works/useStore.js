@@ -29,6 +29,10 @@ const createTopicLink = (topic1, topic2) => {
     return [topic1.name, topic2.name].sort() // small - big
 }
 
+const createTopicLabelLink = (topic, label) => {
+    return [topic.name, label.name]
+}
+
 const useStore = () => {
     // so far we have no order
     const [topicDict, setTopicDict] = useState({})
@@ -110,7 +114,32 @@ const useStore = () => {
         return names.map(name => topicDict[name])
     }
 
+    const getLabels = topic => {
+        const name = topic.name
+        const texts = []
+        for (const [tname, lname] of topicLabelLinks) {
+            if (name === tname) {
+                texts.push(lname)
+            }
+        }
+        return texts.map(text => labelDict[text])
+    }
+
+    const hasTopicLabelLink = (link) => {
+        return topicLabelLinks.some(l => isSameLink(l, link))
+    }
+
+    const allLabels = Object.values(labelDict)
+
     return {
+        labelTopic (topic, label) {
+            const link = createTopicLabelLink(topic, label)
+            if (!hasTopicLabelLink(link)) {
+                setTopicLabelLinks([...topicLabelLinks, link])
+            }
+
+        },
+        getLabels,
         topics,
         labels,
         addTopic,

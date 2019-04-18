@@ -21,6 +21,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const store = useContext(StoreContext)
     const otherTopics = store.topics.filter(one => one.name != topic.name)
     const similarTopics = store.getSimilarTopics(topic)
+    const myLabels = store.getLabels(topic)
 
     const listProps = {
         list: similarTopics,
@@ -50,7 +51,10 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const spanStyle = {
         border: '1px solid black',
         backgroundColor: 'yellow'
+    }
 
+    const addLabel = (label) => {
+        store.labelTopic(topic, label)
     }
 
     return (
@@ -63,9 +67,25 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 Similar Topics:  <br />
                 {similarTopicList}
             </Area>
+            <Area> 
+                Labels: <br/>
+                <List {...{
+                    list: myLabels,
+                    getKey: l => l.name,
+                    renderContent: l => l.name
+                }} />
+            </Area>
             <Area>
                 Other nodes: <br />
                 {otherTopicList}
+            </Area>
+            <Area>
+                All labels: <br/>
+                <List {...{
+                    list: store.labels,
+                    getKey: l => l.name,
+                    renderContent: l => <span> {l.name} <button onClick={e => addLabel(l)}>Add</button> </span>
+                }}/>
             </Area>
         </Fragment>
     )
