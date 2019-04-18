@@ -17,7 +17,6 @@ const List = ({ list, getKey = a => a, renderContent }) => {
     )
 }
 
-
 export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const store = useContext(StoreContext)
     const otherTopics = store.topics.filter(one => one.name != topic.name)
@@ -59,7 +58,6 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
             <Area>
                 <span style={spanStyle}> Name: {topic.name} </span>  <br />
                 Description: {topic.description}    <br />
-                Similar Topics:
             </Area>
             <Area>
                 Similar Topics:  <br />
@@ -68,10 +66,6 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
             <Area>
                 Other nodes: <br />
                 {otherTopicList}
-            </Area>
-            <Area>
-                links: &nbsp;
-                {store.topicLinks.map(pair => pair.join('=>')).join(', ')}
             </Area>
         </Fragment>
     )
