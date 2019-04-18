@@ -95,6 +95,21 @@ const useStore = () => {
         }
     }
 
+    // todo: memoize if expensive
+    const getSimilarTopics = (topic) => {
+        const name = topic.name
+        const names = []
+        for (const [name1, name2] of topicLinks) {
+            if (name1 === name) {
+                names.push(name2)
+            }
+            if (name2 === name) {
+                names.push(name1)
+            }
+        }
+        return names.map(name => topicDict[name])
+    }
+
     return {
         topics,
         labels,
@@ -112,6 +127,7 @@ const useStore = () => {
         },
         linkTwoTopics,
         topicLinks,
+        getSimilarTopics,
     }
 }
 
