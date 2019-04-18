@@ -57,6 +57,10 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         store.labelTopic(topic, label)
     }
 
+    const removeLabel = label => {
+        store.removeLabelFromTopic(topic, label)
+    }
+
     return (
         <Fragment>
             <Area>
@@ -67,12 +71,12 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 Similar Topics:  <br />
                 {similarTopicList}
             </Area>
-            <Area> 
-                Labels: <br/>
+            <Area>
+                Labels: <br />
                 <List {...{
                     list: myLabels,
                     getKey: l => l.name,
-                    renderContent: l => l.name
+                    renderContent: l => <span> {l.name} <button onClick={e => removeLabel(l)}>Remove</button> </span>
                 }} />
             </Area>
             <Area>
@@ -80,12 +84,12 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 {otherTopicList}
             </Area>
             <Area>
-                All labels: <br/>
+                All labels: <br />
                 <List {...{
                     list: store.labels,
                     getKey: l => l.name,
                     renderContent: l => <span> {l.name} <button onClick={e => addLabel(l)}>Add</button> </span>
-                }}/>
+                }} />
             </Area>
         </Fragment>
     )

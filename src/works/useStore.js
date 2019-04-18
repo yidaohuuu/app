@@ -132,12 +132,15 @@ const useStore = () => {
     const allLabels = Object.values(labelDict)
 
     return {
+        removeLabelFromTopic (topic, label) {
+            const link = createTopicLabelLink(topic, label)
+            setTopicLabelLinks(topicLabelLinks.filter(l => !isSameLink(l, link)))
+        },
         labelTopic (topic, label) {
             const link = createTopicLabelLink(topic, label)
             if (!hasTopicLabelLink(link)) {
                 setTopicLabelLinks([...topicLabelLinks, link])
             }
-
         },
         getLabels,
         topics,
