@@ -52,11 +52,8 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         store.removeLabelFromTopic(topic, label)
     }
 
-
     const [editName, setEditName] = useState(topic.name)
     const [editDescription, setEditDescription] = useState(topic.description)
-
-
 
     const doEditCurrentTopic = () => {
         const updated = {...topic, name: editName, description: editDescription}

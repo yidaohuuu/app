@@ -172,6 +172,18 @@ const useStore = () => {
         getSimilarTopics,
         updateTopic (newOne) {
             setTopicDict({...topicDict, [newOne.id]: newOne})
+        },
+        removeTopic (topic) {
+            // remove from dict
+            // TODO: The problem, entries will return string
+            const newDict = Object.fromEntries(
+                Object.entries(topicDict).filter(entry => entry[0] != topic.id)
+            )
+            setTopicDict(newDict)
+
+            // remove relations
+            setTopicLinks(topicLinks.filter(([id1, id2])=> id1 !== topic.id && id2 !== topic.id))
+            setTopicLabelLinks(topicLabelLinks.filter(([id]) => id !== topic.id))
         }
     }
 }
