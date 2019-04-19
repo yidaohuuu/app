@@ -21,9 +21,6 @@ const Save = ({onClick}) => {
 
 const Load = ({onClick}) => <DoButton onClick={onClick} text="Reload" />
 
-const isRequired = () => {
-    throw new Error('A required parameter is missing')
-}
 
 const Workspace = () => {
     const views = {
@@ -41,6 +38,7 @@ const Workspace = () => {
     const addTopic = () => {
         store.addTopic({name: topicName, description: topicDescription})
         setTopicName('')
+        setTopicDescription('')
     }
     const addLabel = () => {
         store.addLabel({name: labelName})

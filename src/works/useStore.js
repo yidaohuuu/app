@@ -1,53 +1,55 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import resource from 'resource'
 import utils from 'utils'
-const {isRequired} = utils
-
-const labelFuncs = {
-    createLabel ({name = isRequired()}) {
-        return {
-            name,
-            similar: []
-        }
-    }
-}
-
-const topicFuncs = {
-    createTopic ({name = isRequired(), description = '', }) {
-        return {
-            name,
-            description,
-            labels: [],
-            similar: [],
-            comments: [],
-        }
-    }
-}
+import useId from 'useId'
+const { isRequired } = utils
 
 
 const createTopicLink = (topic1, topic2) => {
-    return [topic1.name, topic2.name].sort() // small - big
+    return [topic1.id, topic2.id].sort() // small - big
 }
 
 const createTopicLabelLink = (topic, label) => {
-    return [topic.name, label.name]
+    return [topic.id, label.id]
 }
 
 const useStore = () => {
     // so far we have no order
+    const idGenerator = useId()
+    const labelFuncs = {
+        // could refactor out the core if new id is not needed
+        createLabel({ name = isRequired() }) {
+            return {
+                id: idGenerator.generate(),
+                name,
+                similar: []
+            }
+        }
+    }
+    const topicFuncs = {
+        createTopic({ name = isRequired(), description = '', }) {
+            return {
+                id: idGenerator.generate(),
+                name,
+                description,
+                labels: [],
+                similar: [],
+                comments: [],
+            }
+        }
+    }
     const [topicDict, setTopicDict] = useState({})
     const [labelDict, setLabelDict] = useState({})
-    const [currentTopicId, setCurrentTopicId] = useState(null)
-    const [currentLabelId, setCurrentLabelId] = useState(null)
+    const [currentTopicId, setCurrentTopicId] = useState(-1)
+    const [currentLabelId, setCurrentLabelId] = useState(-1)
     const [topicLinks, setTopicLinks] = useState([])
     const [labelLinks, setLabelLinks] = useState([])
     const [topicLabelLinks, setTopicLabelLinks] = useState([])
 
-    const hasTopic = currentTopicId != null
-    const hasLabel = currentLabelId != null
+    const hasTopic = currentTopicId > -1
+    const hasLabel = currentLabelId > -1
     const currentTopic = hasTopic ? topicDict[currentTopicId] : null
     const currentLabel = hasLabel ? labelDict[currentLabelId] : null
-
 
     // derived values
     const topics = Object.values(topicDict)
@@ -55,16 +57,17 @@ const useStore = () => {
 
     const addTopic = (attrs) => {
         const topic = topicFuncs.createTopic(attrs)
-        setTopicDict({...topicDict, [topic.name]: topic})
+        setTopicDict({ ...topicDict, [topic.id]: topic })
     }
 
     const addLabel = (attrs) => {
         const label = labelFuncs.createLabel(attrs)
-        setLabelDict({...labelDict, [label.name]: label})
+        setLabelDict({ ...labelDict, [label.id]: label })
     }
 
     const save = () => {
         const graph = {
+            id: idGenerator.id,
             topicDict,
             labelDict,
             topicLinks,
@@ -76,6 +79,7 @@ const useStore = () => {
     const load = () => {
         return resource.getGraph()
             .then((graph) => {
+                idGenerator.restore(graph.id)
                 setTopicDict(graph.topicDict)
                 setLabelDict(graph.labelDict)
                 setTopicLinks(graph.topicLinks)
@@ -101,28 +105,28 @@ const useStore = () => {
 
     // todo: memoize if expensive
     const getSimilarTopics = (topic) => {
-        const name = topic.name
-        const names = []
-        for (const [name1, name2] of topicLinks) {
-            if (name1 === name) {
-                names.push(name2)
+        const id = topic.id
+        const ids = []
+        for (const [id1, id2] of topicLinks) {
+            if (id1 === id) {
+                ids.push(id2)
             }
-            if (name2 === name) {
-                names.push(name1)
+            if (id2 === id) {
+                ids.push(id1)
             }
         }
-        return names.map(name => topicDict[name])
+        return ids.map(id => topicDict[id])
     }
 
     const getLabels = topic => {
-        const name = topic.name
-        const texts = []
-        for (const [tname, lname] of topicLabelLinks) {
-            if (name === tname) {
-                texts.push(lname)
+        const id = topic.id
+        const ids = []
+        for (const [tid, lid] of topicLabelLinks) {
+            if (id === tid) {
+                ids.push(lid)
             }
         }
-        return texts.map(text => labelDict[text])
+        return ids.map(id => labelDict[id])
     }
 
     const hasTopicLabelLink = (link) => {
@@ -131,18 +135,18 @@ const useStore = () => {
 
     const allLabels = Object.values(labelDict)
 
-    const toFilter = link => l => !isSameLink(link, l)
+    const notEqualTo = link => l => !isSameLink(link, l)
 
     return {
-        removeTopicLink (t1, t2) {
+        removeTopicLink(t1, t2) {
             const link = createTopicLink(t1, t2)
-            setTopicLinks(topicLinks.filter(toFilter(link)))
+            setTopicLinks(topicLinks.filter(notEqualTo(link)))
         },
-        removeLabelFromTopic (topic, label) {
+        removeLabelFromTopic(topic, label) {
             const link = createTopicLabelLink(topic, label)
-            setTopicLabelLinks(topicLabelLinks.filter(toFilter(link)))
+            setTopicLabelLinks(topicLabelLinks.filter(notEqualTo(link)))
         },
-        labelTopic (topic, label) {
+        labelTopic(topic, label) {
             const link = createTopicLabelLink(topic, label)
             if (!hasTopicLabelLink(link)) {
                 setTopicLabelLinks([...topicLabelLinks, link])
@@ -157,15 +161,18 @@ const useStore = () => {
         load,
         currentTopic,
         currentLabel,
-        changeTopic (topic) {
-            setCurrentTopicId(topic.name)
+        changeTopic(topic) {
+            setCurrentTopicId(topic.id)
         },
-        changeLabel (label) {
-            setCurrentLabelId(label.name)
+        changeLabel(label) {
+            setCurrentLabelId(label.id)
         },
         linkTwoTopics,
         topicLinks,
         getSimilarTopics,
+        updateTopic (newOne) {
+            setTopicDict({...topicDict, [newOne.id]: newOne})
+        }
     }
 }
 

@@ -1,25 +1,13 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment, useContext, useState } from 'react'
 import utils from 'utils'
 import Area from './Area'
 import StoreContext from './StoreContext'
+import List from './List'
 
-const List = ({ list, getKey = a => a, renderContent }) => {
-    return (
-        <ul>
-            {list.map(item => {
-                return (
-                    <li key={getKey(item)}>
-                        {renderContent(item)}
-                    </li>
-                )
-            })}
-        </ul>
-    )
-}
 
 export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const store = useContext(StoreContext)
-    const otherTopics = store.topics.filter(one => one.name != topic.name)
+    const otherTopics = store.topics.filter(one => one.id != topic.id)
     const similarTopics = store.getSimilarTopics(topic)
     const myLabels = store.getLabels(topic)
 
@@ -27,13 +15,12 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         store.removeTopicLink(one, topic)
     }
 
-    const listProps = {
-        list: similarTopics,
-        getKey: t => t.name,
-        renderContent: t => <span> {t.name} <button onClick={e => removeSimilarTopic(t)}>Remove</button> </span>
-    }
     const similarTopicList = (
-        <List {...listProps} />
+        <List {...{
+            list: similarTopics,
+            getKey: t => t.id,
+            renderContent: t => <span> {t.name} <button onClick={e => removeSimilarTopic(t)}>Remove</button> </span>
+        }} />
     )
 
     const linkTopic = (one) => {
@@ -44,7 +31,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         <ul>
             {otherTopics.map(topic => {
                 return (
-                    <Fragment key={topic.name}>
+                    <Fragment key={topic.id}>
                         <li> {topic.name} <button onClick={() => linkTopic(topic)}> link </button> </li>
                     </Fragment>
                 )
@@ -65,11 +52,29 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         store.removeLabelFromTopic(topic, label)
     }
 
+
+    const [editName, setEditName] = useState(topic.name)
+    const [editDescription, setEditDescription] = useState(topic.description)
+
+
+
+    const doEditCurrentTopic = () => {
+        const updated = {...topic, name: editName, description: editDescription}
+        store.updateTopic(updated)
+    }
+
     return (
         <Fragment>
             <Area>
-                <span style={spanStyle}> Name: {topic.name} </span>  <br />
-                Description: {topic.description}    <br />
+                <div style={spanStyle}>
+                    Name: <br />
+                    <input value={editName} onChange={e => setEditName(e.target.value)} />
+                </div>
+                <div>
+                    Description: <br />
+                    <textarea value={editDescription} onChange={e => setEditDescription(e.target.value)} />
+                </div>
+                <button onClick={doEditCurrentTopic}>Save Changes</button>
             </Area>
             <Area>
                 Similar Topics:  <br />
@@ -79,7 +84,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 Labels: <br />
                 <List {...{
                     list: myLabels,
-                    getKey: l => l.name,
+                    getKey: l => l.id,
                     renderContent: l => <span> {l.name} <button onClick={e => removeLabel(l)}>Remove</button> </span>
                 }} />
             </Area>
@@ -91,7 +96,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 All labels: <br />
                 <List {...{
                     list: store.labels,
-                    getKey: l => l.name,
+                    getKey: l => l.id,
                     renderContent: l => <span> {l.name} <button onClick={e => addLabel(l)}>Add</button> </span>
                 }} />
             </Area>
