@@ -76,15 +76,20 @@ const useStore = () => {
         }
         return resource.saveGraph(graph)
     }
-    const load = () => {
+
+    const load = (graph) => {
+        idGenerator.restore(graph.id)
+        setTopicDict(graph.topicDict)
+        setLabelDict(graph.labelDict)
+        setTopicLinks(graph.topicLinks)
+        setLabelLinks(graph.labelLinks)
+        setTopicLabelLinks(graph.topicLabelLinks)
+    }
+
+    const loadFromServer = () => {
         return resource.getGraph()
             .then((graph) => {
-                idGenerator.restore(graph.id)
-                setTopicDict(graph.topicDict)
-                setLabelDict(graph.labelDict)
-                setTopicLinks(graph.topicLinks)
-                setLabelLinks(graph.labelLinks)
-                setTopicLabelLinks(graph.topicLabelLinks)
+                load(graph)
             })
     }
 
@@ -170,10 +175,10 @@ const useStore = () => {
         linkTwoTopics,
         topicLinks,
         getSimilarTopics,
-        updateTopic (newOne) {
-            setTopicDict({...topicDict, [newOne.id]: newOne})
+        updateTopic(newOne) {
+            setTopicDict({ ...topicDict, [newOne.id]: newOne })
         },
-        removeTopic (topic) {
+        removeTopic(topic) {
             // remove from dict
             // TODO: The problem, entries will return string
             const newDict = Object.fromEntries(
@@ -182,7 +187,7 @@ const useStore = () => {
             setTopicDict(newDict)
 
             // remove relations
-            setTopicLinks(topicLinks.filter(([id1, id2])=> id1 !== topic.id && id2 !== topic.id))
+            setTopicLinks(topicLinks.filter(([id1, id2]) => id1 !== topic.id && id2 !== topic.id))
             setTopicLabelLinks(topicLabelLinks.filter(([id]) => id !== topic.id))
         }
     }

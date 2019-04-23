@@ -6,6 +6,7 @@ import LabelPage from './LabelPage'
 import Area from './Area'
 import StoreContext from './StoreContext'
 import useStore from './useStore'
+import resource from 'resource'
 
 const DoButton = ({text, onClick}) => {
     return (
@@ -18,9 +19,6 @@ const DoButton = ({text, onClick}) => {
 const Save = ({onClick}) => {
     return <DoButton onClick={onClick} text="Save" />
 }
-
-const Load = ({onClick}) => <DoButton onClick={onClick} text="Reload" />
-
 
 const Workspace = () => {
     const views = {
@@ -58,6 +56,20 @@ const Workspace = () => {
 
     const toLabelPage = () => setView(views.labelPage)
 
+    const onUpload = e => {
+      const target = e.target
+      const files = target.files
+      if (files.length > 0) {
+        const file = e.target.files[0]
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const graph = JSON.parse(event.target.result)
+          target.value = null
+          store.load(graph)
+        }
+        reader.readAsText(file)
+      }
+    }
 
     const mainPage = (
         <Fragment>
@@ -81,7 +93,9 @@ const Workspace = () => {
                 <button onClick={addLabel}>Create</button>
             </Area>
             <Save onClick={onSave}/>
-            <Load onClick={onLoad} />
+            <Area>
+                Load from file: <input type="file" onChange={onUpload} />
+            </Area>
         </Fragment>
     )
 
