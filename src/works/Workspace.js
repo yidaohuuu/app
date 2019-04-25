@@ -10,6 +10,7 @@ import AddTopic from './addTopic/AddTopic'
 import useAddTopic from './addTopic/useAddTopic'
 import useAddLabel from './addLabel/useAddLabel'
 import AddLabel from './addLabel/AddLabel'
+import Page from './Page'
 
 const DoButton = ({ text, onClick }) => {
     return (
@@ -89,8 +90,10 @@ const Workspace = () => {
 
     return (
         <StoreContext.Provider value={store}>
-            {doSwitch()}
-            <DoButton text="to main page" onClick={() => setView(views.main)} />
+            <Page>
+                {doSwitch()}
+                <DoButton text="to main page" onClick={() => setView(views.main)} />
+            </Page>
         </StoreContext.Provider>
     )
 }
