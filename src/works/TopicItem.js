@@ -9,7 +9,7 @@ const style = {
     padding: '3px',
     maxWidth: '100px',
     display: 'inline-block',
-    backgroundColor: 'green'
+    backgroundColor: 'yellow'
 }
 
 

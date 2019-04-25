@@ -58,11 +58,13 @@ const useStore = () => {
     const addTopic = (attrs) => {
         const topic = topicFuncs.createTopic(attrs)
         setTopicDict({ ...topicDict, [topic.id]: topic })
+        return topic
     }
 
     const addLabel = (attrs) => {
         const label = labelFuncs.createLabel(attrs)
         setLabelDict({ ...labelDict, [label.id]: label })
+        return label
     }
 
     const save = () => {

@@ -3,13 +3,32 @@ import utils from 'utils'
 import Area from './Area'
 import StoreContext from './StoreContext'
 import List from './List'
-
+import AddTopic from './addTopic/AddTopic'
+import useAddTopic from './addTopic/useAddTopic'
+import AddLabel from './addLabel/AddLabel'
+import useAddLabel from './addLabel/useAddLabel'
 
 export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const store = useContext(StoreContext)
     const otherTopics = store.topics.filter(one => one.id != topic.id)
     const similarTopics = store.getSimilarTopics(topic)
     const myLabels = store.getLabels(topic)
+    const rawAddTopic = useAddTopic(store)
+    const addTopicProps = {
+        ...rawAddTopic,
+        addTopic () {
+            const added = rawAddTopic.addTopic()
+            store.linkTwoTopics(added, topic)
+        }
+    }
+    const rawAddLabel = useAddLabel(store)
+    const addLabelProps = {
+        ...rawAddLabel,
+        addLabel () {
+            const added = rawAddLabel.addLabel()
+            store.labelTopic(topic, added)
+        }
+    }
 
     const removeSimilarTopic = one => {
         store.removeTopicLink(one, topic)
@@ -44,7 +63,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         backgroundColor: 'yellow'
     }
 
-    const addLabel = (label) => {
+    const linkLabel = (label) => {
         store.labelTopic(topic, label)
     }
 
@@ -73,6 +92,8 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 </div>
                 <button onClick={doEditCurrentTopic}>Save Changes</button>
             </Area>
+            <AddTopic {...addTopicProps} />
+            <AddLabel {...addLabelProps} />
             <Area>
                 Similar Topics:  <br />
                 {similarTopicList}
@@ -94,7 +115,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 <List {...{
                     list: store.labels,
                     getKey: l => l.id,
-                    renderContent: l => <span> {l.name} <button onClick={e => addLabel(l)}>Add</button> </span>
+                    renderContent: l => <span> {l.name} <button onClick={e => linkLabel(l)}>Add</button> </span>
                 }} />
             </Area>
         </Fragment>
