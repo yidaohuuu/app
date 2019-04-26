@@ -11,6 +11,7 @@ import useAddTopic from './addTopic/useAddTopic'
 import useAddLabel from './addLabel/useAddLabel'
 import AddLabel from './addLabel/AddLabel'
 import Page from './Page'
+import ItemListWrapper from './ItemListWrapper'
 
 const DoButton = ({ text, onClick }) => {
     return (
@@ -61,15 +62,40 @@ const Workspace = () => {
         }
     }
 
+
+    const Card = ({ title, children }) => (
+        <div className="card">
+            <header className="card-header">
+                <p className="card-header-title">{title}</p>
+            </header>
+            <div className="card-content">
+                <div class="content">
+                    {children}
+                </div>
+            </div>
+        </div>
+    )
+
     const mainPage = (
         <Fragment>
-            <Area key='1'>
-                Current topics:
-                {topics.map(topic => <TopicItem key={topic.name} topic={topic} onClick={() => toTopicPage(topic)} />)}
-                <br />
-                Current labels:
-                {labels.map(label => <LabelItem key={label.name} label={label} onClick={toLabelPage} />)}
-            </Area>
+            <Card title='Topics'>
+                {
+                    topics.length > 0
+                        ? (<ItemListWrapper>
+                                {topics.map(topic => <TopicItem key={topic.name} topic={topic} onClick={() => toTopicPage(topic)} />)}
+                           </ItemListWrapper>)
+                        : 'None'
+                }
+            </Card>
+            <Card title="Labels">
+                {
+                    labels.length > 0
+                        ? (<ItemListWrapper>
+                                {labels.map(label => <LabelItem key={label.name} label={label} onClick={toLabelPage} />)}
+                          </ItemListWrapper>)
+                        : 'None'
+                }
+            </Card>
             <AddTopic {...useAddTopic(store)} />
             <AddLabel {...useAddLabel(store)} />
             <Save onClick={onSave} />

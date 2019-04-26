@@ -1,16 +1,17 @@
 import React from 'react'
+import ItemListWrapper from './ItemListWrapper'
 
-const List = ({ list, getKey = a => a, renderContent }) => {
+const List = ({ list, renderContent }) => {
     return (
-        <ul>
-            {list.map(item => {
-                return (
-                    <li key={getKey(item)}>
-                        {renderContent(item)}
-                    </li>
-                )
-            })}
-        </ul>
+        list.length > 0
+            ? (
+                <ItemListWrapper>
+                    {list.map(item => {
+                        return (renderContent(item))
+                    })}
+                </ItemListWrapper>
+            )
+            : 'None'
     )
 }
 

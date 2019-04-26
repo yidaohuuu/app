@@ -7,6 +7,22 @@ import AddTopic from './addTopic/AddTopic'
 import useAddTopic from './addTopic/useAddTopic'
 import AddLabel from './addLabel/AddLabel'
 import useAddLabel from './addLabel/useAddLabel'
+import Item from './Item'
+
+const Hero = ({ title, description }) => (
+    <section className="hero is-dark">
+        <div className="hero-body">
+            <div className="container">
+                <h1 className="title">
+                    {title}
+                </h1>
+                <h2 className="subtitle">
+                    {description}
+                </h2>
+            </div>
+        </div>
+    </section>
+)
 
 export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const store = useContext(StoreContext)
@@ -16,7 +32,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const rawAddTopic = useAddTopic(store)
     const addTopicProps = {
         ...rawAddTopic,
-        addTopic () {
+        addTopic() {
             const added = rawAddTopic.addTopic()
             store.linkTwoTopics(added, topic)
         }
@@ -24,7 +40,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const rawAddLabel = useAddLabel(store)
     const addLabelProps = {
         ...rawAddLabel,
-        addLabel () {
+        addLabel() {
             const added = rawAddLabel.addLabel()
             store.labelTopic(topic, added)
         }
@@ -37,8 +53,7 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const similarTopicList = (
         <List {...{
             list: similarTopics,
-            getKey: t => t.id,
-            renderContent: t => <span> {t.name} <button onClick={e => removeSimilarTopic(t)}>Remove</button> </span>
+            renderContent: t => <Item item={t} onClick={() => {}} onDelete={() => removeSimilarTopic(t)} />,
         }} />
     )
 
@@ -58,10 +73,6 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         </ul>
     )
 
-    const spanStyle = {
-        border: '1px solid black',
-        backgroundColor: 'yellow'
-    }
 
     const linkLabel = (label) => {
         store.labelTopic(topic, label)
@@ -71,41 +82,30 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         store.removeLabelFromTopic(topic, label)
     }
 
-    const [editName, setEditName] = useState(topic.name)
-    const [editDescription, setEditDescription] = useState(topic.description)
-
-    const doEditCurrentTopic = () => {
-        const updated = {...topic, name: editName, description: editDescription}
-        store.updateTopic(updated)
-    }
-
     return (
         <Fragment>
+            <div style={{ 'margin-bottom': '20px' }}>
+                <Hero title={topic.name} description={topic.description} />
+            </div>
             <Area>
-                <div style={spanStyle}>
-                    Name: <br />
-                    <input value={editName} onChange={e => setEditName(e.target.value)} />
+                <div style={{display: 'flex'}}> 
+                    <span style={{marginRight: '10px'}}>Labels: </span>
+                    <div> 
+                        <List {...{
+                            list: myLabels,
+                            renderContent: l => <Item colorClass="is-primary" item={l} onClick={() => {}} onDelete={() => removeLabel(l)} />,
+                        }} />
+                    </div>
                 </div>
-                <div>
-                    Description: <br />
-                    <textarea value={editDescription} onChange={e => setEditDescription(e.target.value)} />
-                </div>
-                <button onClick={doEditCurrentTopic}>Save Changes</button>
             </Area>
-            <AddTopic {...addTopicProps} />
+            <Area>
+                <div style={{display: 'flex'}}> 
+                    <span style={{marginRight: '10px'}}>Topics: </span>
+                    {similarTopicList}
+                </div>
+            </Area>
             <AddLabel {...addLabelProps} />
-            <Area>
-                Similar Topics:  <br />
-                {similarTopicList}
-            </Area>
-            <Area>
-                Labels: <br />
-                <List {...{
-                    list: myLabels,
-                    getKey: l => l.id,
-                    renderContent: l => <span> {l.name} <button onClick={e => removeLabel(l)}>Remove</button> </span>
-                }} />
-            </Area>
+            <AddTopic {...addTopicProps} />
             <Area>
                 Other nodes: <br />
                 {otherTopicList}
@@ -114,7 +114,6 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                 All labels: <br />
                 <List {...{
                     list: store.labels,
-                    getKey: l => l.id,
                     renderContent: l => <span> {l.name} <button onClick={e => linkLabel(l)}>Add</button> </span>
                 }} />
             </Area>
