@@ -15,6 +15,7 @@ import ItemListWrapper from './ItemListWrapper'
 import Card from './Card'
 import Button from './Button'
 import FileInput from './FileInput'
+import ControlTag from './ControlTag'
 
 const DoButton = ({ text, onClick }) => {
     return (

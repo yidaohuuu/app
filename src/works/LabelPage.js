@@ -1,14 +1,11 @@
 import React, { Fragment } from 'react'
 import Hero from './Hero'
 import Card from './Card'
-import DeleteTag from './DeleteTag'
 import ItemListWrapper from './ItemListWrapper'
+import ControlTag from './ControlTag'
 
 export default function LabelPage({ label, store }) {
     const topics = store.getTopicsByLabel(label)
-    const onRemoveTopic = (topic) => {
-        alert('wanted to remove this topic', topic.name)
-    }
     // jjtodo: for topics in this labels page, should probably use a tag without deletion 
     // feature.
     const topicsView = topics.length > 0
@@ -16,7 +13,7 @@ export default function LabelPage({ label, store }) {
             <ItemListWrapper>
                 {
                     topics.map(topic => (
-                        <DeleteTag key={topic.id} item={topic} onClick={() => { }} onDelete={() => onRemoveTopic(topic)} />
+                        <ControlTag key={topic.id} text={topic.name} onClick={() => {}} />
                     ))
                 }
             </ItemListWrapper>
