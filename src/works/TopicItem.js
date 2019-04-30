@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import StoreContext from './StoreContext'
 import utils from 'utils'
-import Item from './Item'
+import DeleteTag from './DeleteTag'
 const { isRequired } = utils
 
 const TopicItem = ({ topic = isRequired(), onClick = isRequired() }) => {
@@ -11,7 +11,7 @@ const TopicItem = ({ topic = isRequired(), onClick = isRequired() }) => {
         store.removeTopic(topic)
     }
     return (
-        <Item {...{
+        <DeleteTag {...{
             onClick, item: topic, onDelete: removeTopic
         }} />
     )

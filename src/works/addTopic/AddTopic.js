@@ -1,14 +1,24 @@
 import React from 'react'
-import Area from '../Area'
+import Card from '../Card'
+import Input from '../Input'
+import Label from '../Label'
+import Field from '../Field'
+import FooterLink from '../FooterLink'
 
 const AddTopic = ({ topicName, onChangeTopicName, topicDescription, setTopicDescription, addTopic }) => {
     return (
-        <Area key='2'>
-            Create a topic: <br />
-            Name: <input value={topicName} onChange={onChangeTopicName} /> <br />
-            Description: <input value={topicDescription} onChange={e => setTopicDescription(e.target.value)} /> <br />
-            <button onClick={addTopic}>Create</button>
-        </Area>
+        <Card title="Add Topic" footer={(
+            <FooterLink text="Add" onClick={addTopic} />
+        )}>
+            <Field>
+                <Label>Name</Label>
+                <Input value={topicName} onChange={onChangeTopicName} />
+            </Field>
+            <Field>
+                <Label>Description</Label>
+                <Input value={topicDescription} onChange={e => setTopicDescription(e.target.value)} />
+            </Field>
+        </Card>
     )
 }
 

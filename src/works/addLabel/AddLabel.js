@@ -1,13 +1,13 @@
 import React from 'react'
-import Area from '../Area'
+import Card from '../Card'
+import InputField from '../InputField'
+import FooterLink from '../FooterLink'
 
 const AddLabel = ({ labelName, setLabelName, addLabel }) => {
     return (
-        <Area>
-            Create a label: <br />
-            Name: <input value={labelName} onChange={e => setLabelName(e.target.value)} /> <br />
-            <button onClick={addLabel}>Create</button>
-        </Area>
+        <Card title="Add Label" footer={<FooterLink text="Add" onClick={addLabel} />}>
+            <InputField label="Name" value={labelName} onChange={e => setLabelName(e.target.value)} />
+        </Card>
     )
 }
 

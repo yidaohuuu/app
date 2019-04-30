@@ -1,17 +1,15 @@
 import React from 'react'
 import utils from 'utils'
-import Item from './Item'
+import DeleteTag from './DeleteTag'
 
 const LabelItem = ({label = utils.isRequired(), onClick}) => {
     return (
-        <Item 
+        <DeleteTag
             onClick={onClick}
             item={label}
             onDelete={utils.stopPropagation}
             colorClass="is-primary"
-        > 
-            {label.name} 
-        </Item>
+        /> 
     )
 }
 

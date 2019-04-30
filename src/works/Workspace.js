@@ -12,11 +12,14 @@ import useAddLabel from './addLabel/useAddLabel'
 import AddLabel from './addLabel/AddLabel'
 import Page from './Page'
 import ItemListWrapper from './ItemListWrapper'
+import Card from './Card'
+import Button from './Button'
+import FileInput from './FileInput'
 
 const DoButton = ({ text, onClick }) => {
     return (
         <Area>
-            <button onClick={onClick}>{text}</button>
+            <Button onClick={onClick}>{text}</Button>
         </Area>
     )
 }
@@ -45,7 +48,11 @@ const Workspace = () => {
     const onLoad = () => store.load()
 
 
-    const toLabelPage = () => setView(views.labelPage)
+    const toLabelPage = (label) => {
+        store.changeLabel(label)
+        setView(views.labelPage)
+    }
+    
 
     const onUpload = e => {
         const target = e.target
@@ -63,18 +70,6 @@ const Workspace = () => {
     }
 
 
-    const Card = ({ title, children }) => (
-        <div className="card">
-            <header className="card-header">
-                <p className="card-header-title">{title}</p>
-            </header>
-            <div className="card-content">
-                <div class="content">
-                    {children}
-                </div>
-            </div>
-        </div>
-    )
 
     const mainPage = (
         <Fragment>
@@ -91,7 +86,7 @@ const Workspace = () => {
                 {
                     labels.length > 0
                         ? (<ItemListWrapper>
-                                {labels.map(label => <LabelItem key={label.name} label={label} onClick={toLabelPage} />)}
+                                {labels.map(label => <LabelItem key={label.name} label={label} onClick={() => toLabelPage(label)} />)}
                           </ItemListWrapper>)
                         : 'None'
                 }
@@ -100,7 +95,7 @@ const Workspace = () => {
             <AddLabel {...useAddLabel(store)} />
             <Save onClick={onSave} />
             <Area>
-                Load from file: <input type="file" onChange={onUpload} />
+                <FileInput onChange={onUpload} />
             </Area>
         </Fragment>
     )
@@ -109,7 +104,7 @@ const Workspace = () => {
         switch (view) {
             case views.main: return mainPage
             case views.topicPage: return <TopicPage topic={store.currentTopic} />
-            case views.labelPage: return <LabelPage />
+            case views.labelPage: return <LabelPage label={store.currentLabel} store={store} />
             default: return mainPage
         }
     }

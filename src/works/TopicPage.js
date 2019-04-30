@@ -1,28 +1,16 @@
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, useContext } from 'react'
 import utils from 'utils'
-import Area from './Area'
 import StoreContext from './StoreContext'
 import List from './List'
 import AddTopic from './addTopic/AddTopic'
 import useAddTopic from './addTopic/useAddTopic'
 import AddLabel from './addLabel/AddLabel'
 import useAddLabel from './addLabel/useAddLabel'
-import Item from './Item'
-
-const Hero = ({ title, description }) => (
-    <section className="hero is-dark">
-        <div className="hero-body">
-            <div className="container">
-                <h1 className="title">
-                    {title}
-                </h1>
-                <h2 className="subtitle">
-                    {description}
-                </h2>
-            </div>
-        </div>
-    </section>
-)
+import DeleteTag from './DeleteTag'
+import Card from './Card'
+import ItemListWrapper from './ItemListWrapper'
+import PlusTag from './PlusTag'
+import Hero from './Hero'
 
 export default function TopicPage({ topic = utils.isRequired(), topics }) {
     const store = useContext(StoreContext)
@@ -50,28 +38,9 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
         store.removeTopicLink(one, topic)
     }
 
-    const similarTopicList = (
-        <List {...{
-            list: similarTopics,
-            renderContent: t => <Item item={t} onClick={() => {}} onDelete={() => removeSimilarTopic(t)} />,
-        }} />
-    )
-
     const linkTopic = (one) => {
         store.linkTwoTopics(one, topic)
     }
-
-    const otherTopicList = (
-        <ul>
-            {otherTopics.map(topic => {
-                return (
-                    <Fragment key={topic.id}>
-                        <li> {topic.name} <button onClick={() => linkTopic(topic)}> link </button> </li>
-                    </Fragment>
-                )
-            })}
-        </ul>
-    )
 
 
     const linkLabel = (label) => {
@@ -84,39 +53,41 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
 
     return (
         <Fragment>
-            <div style={{ 'margin-bottom': '20px' }}>
+            <div style={{ 'marginBottom': '20px' }}>
                 <Hero title={topic.name} description={topic.description} />
             </div>
-            <Area>
-                <div style={{display: 'flex'}}> 
-                    <span style={{marginRight: '10px'}}>Labels: </span>
-                    <div> 
-                        <List {...{
-                            list: myLabels,
-                            renderContent: l => <Item colorClass="is-primary" item={l} onClick={() => {}} onDelete={() => removeLabel(l)} />,
-                        }} />
-                    </div>
+            <Card title="Labels">
+                <List {...{
+                    list: myLabels,
+                    renderContent: l => <DeleteTag key={l.id} colorClass="is-primary" item={l} onClick={() => { }} onDelete={() => removeLabel(l)} />,
+                }} />
+            </Card>
+            <Card title="Topics">
+                <div style={{ display: 'flex' }}>
+                    <List {...{
+                        list: similarTopics,
+                        renderContent: t => <DeleteTag key={t.id} item={t} onClick={() => { }} onDelete={() => removeSimilarTopic(t)} />,
+                    }} />
                 </div>
-            </Area>
-            <Area>
-                <div style={{display: 'flex'}}> 
-                    <span style={{marginRight: '10px'}}>Topics: </span>
-                    {similarTopicList}
-                </div>
-            </Area>
+            </Card>
             <AddLabel {...addLabelProps} />
             <AddTopic {...addTopicProps} />
-            <Area>
-                Other nodes: <br />
-                {otherTopicList}
-            </Area>
-            <Area>
-                All labels: <br />
+            <Card title="Other Topics">
+                <ItemListWrapper>
+                    {otherTopics.map(topic => {
+                        return (
+                            <PlusTag colorClass="is-link" key={topic.id} item={topic} onAdd={() => linkTopic(topic)} />
+                        )
+                    })}
+                </ItemListWrapper>
+            </Card>
+            <Card title="All Labels">
                 <List {...{
                     list: store.labels,
-                    renderContent: l => <span> {l.name} <button onClick={e => linkLabel(l)}>Add</button> </span>
+                    renderContent: l => <PlusTag colorClass="is-primary" key={l.id} item={l} onAdd={e => linkLabel(l)} />
                 }} />
-            </Area>
+            </Card>
+
         </Fragment>
     )
 }

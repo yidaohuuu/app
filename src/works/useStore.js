@@ -55,6 +55,7 @@ const useStore = () => {
     const topics = Object.values(topicDict)
     const labels = Object.values(labelDict)
 
+
     const addTopic = (attrs) => {
         const topic = topicFuncs.createTopic(attrs)
         setTopicDict({ ...topicDict, [topic.id]: topic })
@@ -110,6 +111,18 @@ const useStore = () => {
         }
     }
 
+    // todo: might need to memoize
+    const getTopicsByLabel = (label) => {
+        const id = label.id
+        const topicIds = []
+        for (const [topicId, labelId] of topicLabelLinks) {
+            if (labelId === id) {
+                topicIds.push(topicId)
+            }
+        }
+        return topicIds.map(topicId => topicDict[topicId])
+    }
+
     // todo: memoize if expensive
     const getSimilarTopics = (topic) => {
         const id = topic.id
@@ -145,6 +158,7 @@ const useStore = () => {
     const notEqualTo = link => l => !isSameLink(link, l)
 
     return {
+        getTopicsByLabel,
         removeTopicLink(t1, t2) {
             const link = createTopicLink(t1, t2)
             setTopicLinks(topicLinks.filter(notEqualTo(link)))
