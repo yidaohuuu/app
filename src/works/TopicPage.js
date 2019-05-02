@@ -70,8 +70,8 @@ export default function TopicPage({ topic = utils.isRequired(), topics }) {
                     }} />
                 </div>
             </Card>
-            <AddLabel {...addLabelProps} />
             <AddTopic {...addTopicProps} />
+            <AddLabel {...addLabelProps} />
             <Card title="Other Topics">
                 <ItemListWrapper>
                     {otherTopics.map(topic => {
